@@ -1,0 +1,33 @@
+.posts {
+	
+}
+
+.post {
+	width: 45%;
+	margin: 20px auto;
+	border: 1px solid black;
+	@media all and (max-width: 850px) {
+		width: 70%;
+	}
+	@media all and (max-width: 550px) {
+		width: 100%;
+	}
+}
+
+.post__action {
+	font-size: 8px;
+	svg {
+		width: 18px;
+		height: 18px;
+		//fill: white;
+	}
+	&--edit {
+    a {
+      border-bottom: 0;
+    }
+  }
+}
+
+.post__hero {
+
+}

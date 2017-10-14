@@ -1,0 +1,9 @@
+mixin comment(comment = {})
+	.comment__header
+		.comment__author
+			img.avatar(src=comment.author.gravatar)
+			p= comment.author.username
+			time.comments__time(datetime=comment.created)= h.moment(comment.posted).fromNow()
+	.comment__text
+		p= comment.text
+	

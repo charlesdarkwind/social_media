@@ -1,0 +1,7 @@
+mixin commentForm(comment = {}, id)
+	form.comment(action=`/p/${id}/comment` method="POST" name="comment")
+		h2 New Comment
+		textarea(name="text")
+			if comment
+				p= comment.text
+		input(type="submit" value="Submit" class="button")

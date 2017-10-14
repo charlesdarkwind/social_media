@@ -1,0 +1,8 @@
+extends layout
+
+include mixins/_postForm
+
+block content
+	.inner
+		h3= title
+		+postForm(post)

@@ -1,0 +1,23 @@
+.like {
+  &__button {
+    background: none;
+    border: 0;
+    outline: 0;
+    position: relative;
+    &:after {
+      font-size: 20px;
+      position: absolute;
+      opacity: 0;
+      top: 0;
+    }
+    svg {
+      width: 25px;
+      fill: white;
+    }
+    &--hearted {
+      svg {
+        fill: blue;
+      }
+    }
+  }
+}

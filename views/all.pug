@@ -1,0 +1,16 @@
+extends layout
+
+include mixins/_postCard
+
+block content
+	.wall__header
+		.wall__header--sort
+			li.sort 
+				a(href="/all") Top
+			li.sort 
+				a(href="/new") New
+	.inner
+		h2= title
+		.posts
+			each post in posts
+				+postCard(post)

@@ -1,0 +1,13 @@
+mixin postForm(post = {})
+	form(action=`/add/${post._id || ''}` method="POST" class="form__add" enctype="multipart/form-data")
+		label(for="title") Title
+		input(type="text" name="title" value=post.title)
+		label(for="text") Description (optional)
+		textarea(name="text")= post.text
+		label(for="url") Link / URL
+		input(type="url" name="url" value=post.url) 
+		label(for="image") Image
+			input(type="file" name="image" id="image" accept="image/gif, image/png, image/jpeg")
+			if post.image
+				img(src=`/uploads/${post.image}`, alt=post.name width=400)
+		input(type="submit" value="Submit" class="button")

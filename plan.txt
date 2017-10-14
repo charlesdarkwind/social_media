@@ -1,0 +1,44 @@
+Menu tabs (pages): 
+	
+	Logo/title: redirects to All/Main page	
+	All(main Page): Best posts by all this week - can sort by newest, best, and show results for certain time frame, search bar
+	Circles: Best posts by friends - can sort by newest, best, and show results for certain time frame, search bar
+
+	When logged in:
+		New Post: Make a new post
+		Avatar: hearts/golds, uploads, page for personnal infos
+		Friends: Shows friends
+		Log out
+
+	When logged out:
+		Log in
+		Register
+
+_______________________________
+	On someone's page: 
+
+		Tabs:
+			- Main: see all posts
+			- Hearts: see all likes posts
+			- Golden hearts
+
+		Options:
+			- Add friend
+			- Remove firend
+			- Message
+
+_______________________________
+	On a post:
+
+		- Can click on author
+		- Can heart/golden
+
+*****************
+	TODO:  vid 21, think of some agrregation cases to implement
+		await Promise.all([])
+
+		make css for .likeClass liked button
+		make css for reset mail
+		make css for search and active results of typeahead
+		find a like icon for h.icon in storecard
+		add animate for like in postcard (like__button--animate)

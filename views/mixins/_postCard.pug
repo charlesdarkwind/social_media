@@ -1,0 +1,27 @@
+mixin postCard(post = {})
+	.post
+		.post__hero
+			.post__actions
+				.post__likesCount
+					span= post.likesCount
+				if user
+					.post__action.post__action--like
+						form.like(method="POST" action=`/api/p/${post._id}/like`)
+							- const likeStrings = user.likes.map(obj => obj.toString())
+							- const likeClass = likeStrings.includes(post._id.toString()) ? 'like__button--liked' : ''
+							//pre= h.dump(likeStrings)
+							button(type="submit" name="like" class=likeClass)
+								!= h.icon('point-up')
+				if user && post.author.equals(user._id)
+					.post__action.post__action--edit
+						a(href=`/p/${post._id}/edit`)
+							!= h.icon('pencil')
+			h2.title
+				a(href=`/p/${post._id}`) #{post.title}	
+			//.likes__count
+			//	span #{}
+			.post__author
+				span= post.author.username
+			.post__text
+				p= post.text
+			

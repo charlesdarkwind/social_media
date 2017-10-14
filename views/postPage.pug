@@ -1,0 +1,35 @@
+extends layout
+
+include mixins/_commentForm
+include mixins/_comment
+
+block content
+	.single
+		.single__header
+			.single__header.single__header--title
+				h3 #{post.title}		
+			.single__header.single__header--username
+				span= post.author.username
+			.single__header.post__likesCoun
+				span= post.likesCount
+			if user
+				.single__header.single__header--like
+					form.like(method="POST" action=`/api/p/${post._id}/like`)
+						- const likeStrings = user.likes.map(obj => obj.toString())
+						- const likeClass = likeStrings.includes(post._id.toString()) ? 'button__like--liked' : ''
+						button(type="submit" name="like" class=likeClass)
+							!=h.icon('point-up')
+		.single__body
+			.single__body--text
+				p #{post.text}
+			.single__body--box
+				iframe(id="ytplayer" type="text/html" width="720" height="405" src=(`https://www.youtube.com/embed/${post.urlId}`) frameborder="0" allowfullscreen)
+			.single__body--comments
+				if user
+					+commentForm(null, post._id)
+				if post.comments
+					each comment in post.comments
+						.comments
+							+comment(comment)
+				
+		
