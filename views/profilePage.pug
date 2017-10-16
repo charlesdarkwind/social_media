@@ -1,0 +1,20 @@
+extends layout
+
+include mixins/_postCard
+
+//- The 'userProfile' object is the user's for who the profile page is requested.
+
+block content
+	.profile__header
+		.profile__header.profile__header--username
+			h1 #{userProfile.username}
+		.profile__header.profile__header--icon
+			img.avatar(src=userProfile.gravatar + 'd=retro')
+	.profile__body
+		.profile__body.profile__body--likesCount
+			span Likes given: #{userProfile.likes.length}
+		.profile__body.profile__body--karma
+			span Karma: #{userProfile.karma}
+		.profile__body.profile__body--posts
+			each post in userPosts
+				+postCard(post)
