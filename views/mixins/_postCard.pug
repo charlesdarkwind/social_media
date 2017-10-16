@@ -21,7 +21,7 @@ mixin postCard(post = {})
 			//.likes__count
 			//	span #{}
 			.post__author
-				span= post.author.username
+				a(href=`/profile/${post.author.username}`) #{post.author.username}
 			.post__text
 				p= post.text
 			

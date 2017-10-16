@@ -109,8 +109,8 @@ exports.searchPosts = async (req, res) => {
 exports.likePost = async (req, res) => {
   // User's likes
   let likes = req.user.likes.map(obj => obj.toString());
-  console.log('_______________-')
-  console.log(likes.length)
+  // console.log('_______________-')
+  // console.log(likes.length)
   // Pull it if already liked, addtoset allow to not add it again
   const operator = likes.includes(req.params.id) ? '$pull' : '$addToSet';
   const user = await User
@@ -119,12 +119,30 @@ exports.likePost = async (req, res) => {
       { new: true }
     );
   likes = req.user.likes.map(obj => obj.toString());
-  console.log(likes.length)
+  // console.log(likes.length)
   const val = likes.includes(req.params.id) ? -1 : 1;
   const post = await Post
     .findByIdAndUpdate(req.params.id, 
       { $inc: { likesCount: val }}
     );
+
+  // console.log(typeof(post.author))
+  const postAuthor = post.author.toString();
+  console.log( postAuthor._id)
+  const karmaQuery = await Post.find( { _id: post.author._id });
+  console.log(karmaQuery);
+
+  // User.update({ _id: req.params.id },
+  //   {  }
+  // );
+  // const postAuthor = await User.findOne({ _id: post.author });
+  // const karma = await User.update
+  // const oi = User.findOneAndUpdate({ _id: post.author }, { [operator]: { karma: postAuthor.karma } });
+  // User
+  //   .findOneAndUpdate({ _id: post.author }, { [operator]: { karma: postAuthor.karma } });
+  //   console.log
+    // .update({ [operator]: { karma: postAuthor.karma } });
+  // const t = await User.where()
 
     // return user and post in res (res.data)
     res.json({user, post});
@@ -136,11 +154,21 @@ exports.getLikes = async (req, res) => {
     _id: { $in: req.user.likes }
   });
   //res.json(posts);
-  res.render('all', { title: 'My Liked Posts.', posts })
+  res.render('all', { title: 'My Liked Posts.', posts });
 };
 
 exports.getTopPosts = async (req, res) => {
   const posts = await Post.getTopPosts();
   res.json(posts);
   // res.render('all', { posts, title: 'Top posts' });
+};
+
+exports.getProfilePage = async (req, res) => {
+  const userProfile = await User.findOne({ username: req.params.user });
+  const userPosts = await Post.find({
+    author: userProfile._id
+  });
+
+  //const likesCount = await User.count
+  res.render('profilePage', { title: `${userProfile.username}`, userProfile, userPosts });
 };

@@ -55,6 +55,7 @@ router.post('/account/reset/:token',
   catchErrors(authController.update)
 );
 router.get('/likes', authController.isLoggedIn, catchErrors(appController.getLikes));
+router.get('/profile/:user', catchErrors(appController.getProfilePage));
 
 /*
   API

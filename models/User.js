@@ -22,7 +22,14 @@ const userSchema = new Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  karma: {
+    type: Number,
+    default: 0
+  },
   likes: [
+    { type: mongoose.Schema.ObjectId, ref: 'Post' }
+  ],
+  posts: [
     { type: mongoose.Schema.ObjectId, ref: 'Post' }
   ]
 });
@@ -31,6 +38,12 @@ userSchema.virtual('gravatar').get(function() {
   const hash = md5(this.username); 
   return `https://www.gravatar.com/avatar/${hash}?s=40&d=identicon&r=PG`;
 });
+
+// userSchema.statics.getLikesCount = function() {
+//   return this.aggregate([
+
+//   ]);
+// };
 
 // Exposes the register method
 userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
