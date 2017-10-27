@@ -4,11 +4,25 @@ include mixins/_postCard
 
 block content
 	.wall__header
+		br
+		span Sort by:
 		.wall__header--sort
+			li.sort
+				a(href="/") Trending
 			li.sort 
-				a(href="/all") Top
+				a(href="/new") Newest
 			li.sort 
-				a(href="/new") New
+				a(href="/top") Top
+		.wall__header--time
+			br
+			li.sort__time
+				a(href= `/${title.toLowerCase()}?sort=${title.toLowerCase()}&time=${24}`) Past 24 hours
+			li.sort__time
+				a(href= `/${title.toLowerCase()}?sort=${title.toLowerCase()}&time=${168}`) Past week
+			li.sort__time
+				a(href= `/${title.toLowerCase()}?sort=${title.toLowerCase()}&time=${720}`) Past month
+			li.sort__time
+				a(href= `/${title.toLowerCase()}?sort=${title.toLowerCase()}&time=${0}`) All-time
 	.inner
 		h2= title
 		.posts

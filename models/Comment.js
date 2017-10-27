@@ -7,7 +7,7 @@ const commentSchema = new mongoose.Schema({
     trim: true,
     required: 'Comments cannot be blank'
   },
-  posted: {
+  created: {
     type: Date,
     default: Date.now
   },

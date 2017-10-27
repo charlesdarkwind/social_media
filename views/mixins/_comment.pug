@@ -3,7 +3,7 @@ mixin comment(comment = {})
 		.comment__author
 			img.avatar(src=comment.author.gravatar)
 			a(href=`/profile/${comment.author.username}`) #{comment.author.username}
-			time.comments__time(datetime=comment.created)= h.moment(comment.posted).fromNow()
+			time.comments__time(datetime=comment.created)= h.moment(comment.created).fromNow()
 	.comment__text
 		p= comment.text
 	

@@ -23,7 +23,7 @@ _______________________________
 			- Golden hearts
 
 		Options:
-			- Add friend
+			- subscribe
 			- Remove firend
 			- Message
 
@@ -31,14 +31,24 @@ _______________________________
 	On a post:
 
 		- Can click on author
-		- Can heart/golden
+		- Can like
 
 *****************
-	TODO:  vid 21, think of some agrregation cases to implement
+	TODO:  
+		LOGIC:
+		Sort menu:
+			- see current sort by:
+				- 1 day 
+				- 7 days (default)
+				- 1 month
+				- 1 year
+				- all time
+
+
 		await Promise.all([])
 
-		make css for .likeClass liked button
-		make css for reset mail
-		make css for search and active results of typeahead
-		find a like icon for h.icon in storecard
-		add animate for like in postcard (like__button--animate)
+
+		DESIGN: 
+		- make css for search and active results of typeahead
+		- find a like icon for h.icon in storecard
+		- add animate for like in postcard (like__button--animate)

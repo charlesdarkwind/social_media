@@ -10,7 +10,9 @@ block content
 				h3 #{post.title}		
 			.single__header.single__header--username
 				a(href=`/profile/${post.author.username}`) #{post.author.username}
-			.single__header.post__likesCoun
+				.single__header.single__header--date
+					time.post__time(datetime=post.created)= h.moment(post.created).fromNow()
+			.single__header.single__header--likesCount
 				span= post.likesCount
 			if user
 				.single__header.single__header--like

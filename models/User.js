@@ -9,7 +9,6 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const userSchema = new Schema({
   email: {
     type: String,
-    unique: true,
     lowercase: true,
     trim: true,
     validate: [validator.isEmail, 'Invalid Email Address'],
@@ -22,6 +21,10 @@ const userSchema = new Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+  created: {
+    type: Date,
+    default: Date.now
+  },
   karma: {
     type: Number,
     default: 0

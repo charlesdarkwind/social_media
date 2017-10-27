@@ -33,7 +33,15 @@ const postSchema = new mongoose.Schema({
   likesCount: {
     type: Number,
     default: 0
-  }
+  },
+  datesOfLikes: [{
+    author: String,
+    date: {
+      type: Date,
+      default: Date.now,
+      timestamps: true
+    }
+  }],
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
@@ -70,14 +78,41 @@ function autopopulate(next) {
   next();
 };
 
-postSchema.statics.getTopPosts = function() {
+postSchema.statics.getPosts = function(sort, time) {
+  const sortOrder = sort == 'timeSincePosted' ? 1 : -1;
   return this.aggregate([
     // Lookup posts and populate their comments
-    // 'fom:' mondgb takes the model and lower cases it and adds an 's'
-    { $lookup: {from: 'comments', localField: '_id', foreignField: 'post', as: 'comments'} },
-    // Filter for only items that have 1 or more likes
-    //{ $match:  }
-
+    { $lookup: { from: 'comments', localField: '_id', foreignField: 'post', as: 'comments' } },
+    // Add a time from now field in hours
+    { $addFields: { 
+        timeSincePosted: {
+          $floor: {
+            $divide: [
+              { $subtract: [new Date(), "$created"] },
+              60 * 60 * 1000
+            ]
+          }
+        }
+      } 
+    },
+    // Filter for posts with less than specified hours old, default is infinity (MaxKey)
+    { $match: { timeSincePosted: { $lte: time } } },
+    // Add simple trending score field, condition: check if there is any likes or comments 
+    { $addFields: 
+      { trendingScore: 
+        { $cond: [ 
+            { $or: [ { $gt: [ "$likesCount", 0 ] }, { $gt: [ "$comments", 0 ] } ] }, 
+            { $divide: [
+                { $add: [ { $multiply: [ "$likesCount", 2 ] }, { $size: "$comments" } ] },
+                "$timeSincePosted"
+              ]
+            },
+            0
+          ]
+        } 
+      }        
+    },
+    { $sort: { [sort]: sortOrder } }
   ]);
 };
 

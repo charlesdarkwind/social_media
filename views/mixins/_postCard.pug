@@ -22,6 +22,8 @@ mixin postCard(post = {})
 			//	span #{}
 			.post__author
 				a(href=`/profile/${post.author.username}`) #{post.author.username}
+				.post__date
+					time.post__time(datetime=post.created)= h.moment(post.created).fromNow()
 			.post__text
 				p= post.text
 			

@@ -6,10 +6,12 @@ const authController = require('../controllers/authController');
 const commentController = require('../controllers/commentController');
 const { catchErrors } = require('../handlers/errorHandlers');
 
-// Do work here
-router.get('/', catchErrors(appController.getPosts));
-router.get('/all', catchErrors(appController.getTopPosts));
+// Main page aggregations
+router.get('/', catchErrors(appController.getTrending)); 
+router.get('/trending', catchErrors(appController.getTrending)); 
+router.get('/top', catchErrors(appController.getTopPosts));
 router.get('/new', catchErrors(appController.getNewPosts));
+
 router.get('/add', authController.isLoggedIn, appController.addPost);
 
 router.post('/add',

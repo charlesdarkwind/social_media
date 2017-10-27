@@ -18,7 +18,7 @@ exports.icon = (name) => fs.readFileSync(`./public/images/icons/${name}.svg`);
 exports.siteName = `Social Media`;
 
 exports.menu = [
-  { slug: '/all', title: 'Wall', },
-  { slug: '/add', title: 'New Post', },
-  { slug: '/friends', title: 'Friends', }
+  { slug: '/', title: 'All', },
+  { slug: '/subscriptions', title: 'Subscriptions', },
+  { slug: '/add', title: 'New Post', }
 ];

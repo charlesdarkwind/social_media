@@ -7,7 +7,10 @@ include mixins/_postCard
 block content
 	.profile__header
 		.profile__header.profile__header--username
-			h1 #{userProfile.username}
+			h1= userProfile.username
+		.profile__header.profile__header--date
+			span Joined 
+				time= h.moment(userProfile.created).fromNow()
 		.profile__header.profile__header--icon
 			img.avatar(src=userProfile.gravatar + 'd=retro')
 	.profile__body

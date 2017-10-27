@@ -52,12 +52,6 @@ exports.createPost = async (req, res) => {
   res.redirect(`/p/${post._id}`);
 };
 
-exports.getPosts = async (req, res) => {
-  // 1. Query the DB for a list of all posts
-  const posts = await Post.find();
-  res.render('all', { title: 'All', posts });
-};
-
 const confirmOwner = (post, user) => {
   if (!post.author.equals(user._id)) {
     throw Error('You must be the author in order to edit it!');
@@ -107,44 +101,44 @@ exports.searchPosts = async (req, res) => {
 };
 
 exports.likePost = async (req, res) => {
-  // User's likes
-  let likes = req.user.likes.map(obj => obj.toString());
-  // console.log('_______________-')
-  // console.log(likes.length)
+
+  // Voting user's likes
+  const likes = req.user.likes.map(obj => obj.toString());
+
   // Pull it if already liked, addtoset allow to not add it again
   const operator = likes.includes(req.params.id) ? '$pull' : '$addToSet';
+
   const user = await User
     .findByIdAndUpdate(req.user._id,
-      { [operator]: { likes: req.params.id } },
+      { 
+        [operator]: { likes: req.params.id } 
+      },
       { new: true }
     );
-  likes = req.user.likes.map(obj => obj.toString());
-  // console.log(likes.length)
+
   const val = likes.includes(req.params.id) ? -1 : 1;
+
+  // For trending, (== to scrap ==)
+  // Update post's total likesCount & datesOfLikes array (schema adds date.now)
   const post = await Post
     .findByIdAndUpdate(req.params.id, 
-      { $inc: { likesCount: val }}
+      { 
+        $inc: { likesCount: val }, 
+        [operator]: { 
+          datesOfLikes: {
+            author: req.user._id
+          }  
+        }
+      },
+      { new: true }
     );
 
-  // console.log(typeof(post.author))
-  const postAuthor = post.author.toString();
-  console.log( postAuthor._id)
-  const karmaQuery = await Post.find( { _id: post.author._id });
-  console.log(karmaQuery);
+  // Karma
+  const postAuthor = await User.findOneAndUpdate(
+    { _id: post.author, _id: { $ne: user.id } }, 
+    { $inc: { karma: val } 
+  });
 
-  // User.update({ _id: req.params.id },
-  //   {  }
-  // );
-  // const postAuthor = await User.findOne({ _id: post.author });
-  // const karma = await User.update
-  // const oi = User.findOneAndUpdate({ _id: post.author }, { [operator]: { karma: postAuthor.karma } });
-  // User
-  //   .findOneAndUpdate({ _id: post.author }, { [operator]: { karma: postAuthor.karma } });
-  //   console.log
-    // .update({ [operator]: { karma: postAuthor.karma } });
-  // const t = await User.where()
-
-    // return user and post in res (res.data)
     res.json({user, post});
 };
 
@@ -153,14 +147,45 @@ exports.getLikes = async (req, res) => {
   const posts = await Post.find({
     _id: { $in: req.user.likes }
   });
-  //res.json(posts);
   res.render('all', { title: 'My Liked Posts.', posts });
 };
 
+const checkQuery = async (query, res, modelFieldName, title) => {
+  const time = parseInt(query.time) || 500000; 
+  let sort = modelFieldName;
+  if (Object.keys(query).length) sort = query.sort == 'trending' ? 'trendingScore' : modelFieldName;
+
+  const posts = await Post.getPosts(sort, time);
+  res.render('all', { posts, title });
+};
+
+exports.getTrending = async (req, res) => {
+  checkQuery(req.query, res, 'trendingScore', 'Trending');
+};
+
 exports.getTopPosts = async (req, res) => {
-  const posts = await Post.getTopPosts();
+  checkQuery(req.query, res, 'likesCount', 'Top');
+};
+
+exports.getNewPosts = async (req, res) => {
+  checkQuery(req.query, res, 'timeSincePosted', 'New');
+};
+
+exports.getPosts = async (req, res) => {
+
+  let sort;
+  if (req.query.length) {
+    sort = req.query.sort;
+  } else {
+    sort = 'trending';
+  }
+  // const sort = req.query.length ? req.query.sort : 'trending';
+  const time = req.query.time || 168;
+
+  const posts = await Post.getPosts(sort, time);
   res.json(posts);
-  // res.render('all', { posts, title: 'Top posts' });
+  // title = query.sort
+  // res.render('all', { posts, title: 'New Posts' });
 };
 
 exports.getProfilePage = async (req, res) => {
@@ -169,6 +194,6 @@ exports.getProfilePage = async (req, res) => {
     author: userProfile._id
   });
 
-  //const likesCount = await User.count
   res.render('profilePage', { title: `${userProfile.username}`, userProfile, userPosts });
 };
+
