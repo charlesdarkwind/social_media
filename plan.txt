@@ -52,3 +52,6 @@ _______________________________
 		- make css for search and active results of typeahead
 		- find a like icon for h.icon in storecard
 		- add animate for like in postcard (like__button--animate)
+
+names: transient
+	

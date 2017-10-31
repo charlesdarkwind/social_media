@@ -31,6 +31,7 @@ router.get('/p/:id', catchErrors(appController.getPostById));
 router.get('/p/:id/edit', catchErrors(appController.editPost))
 
 router.post('/p/:id/comment', catchErrors(commentController.addComment));
+router.post('/p/:postId/comments/:parentCommentId', catchErrors(commentController.addChildComment));
 
 router.get('/login', userController.loginForm);
 router.post('/login', authController.login);

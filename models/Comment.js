@@ -20,7 +20,17 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Post',
     required: 'No post origin supplied.'
-  }
+  },
+  // parent: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'Comment'
+  // },
+  // childComments: [
+  //   {
+  //     type: mongoose.Schema.ObjectId,
+  //     ref: 'Comment'
+  //   }
+  // ]
 });
 
 function autopopulate(next) {

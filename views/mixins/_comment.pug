@@ -1,3 +1,5 @@
+include _childCommentForm
+
 mixin comment(comment = {})
 	.comment__header
 		.comment__author
@@ -6,4 +8,10 @@ mixin comment(comment = {})
 			time.comments__time(datetime=comment.created)= h.moment(comment.created).fromNow()
 	.comment__text
 		p= comment.text
+	.comments__childs
+		+childCommentForm(null, post._id, comment._id)
+		//if comment.childComments.length > 0
+			each childComment in childComments
+				//- - console.log(post._id)
+				+childCommentForm(null, post._id, comment._id)
 	
