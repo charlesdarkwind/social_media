@@ -55,3 +55,56 @@ _______________________________
 
 names: transient
 	
+	let currentParent = comment.parent;
+	let parentCount = 0;
+	while (currentParent && parentCount < 6) {
+		parentCount++;
+		currentParent = currentParent.parent;
+	}
+
+	Check the current system is working
+
+	update curent comment parentCOunt
+
+	karma system: 
+		- vote up button
+		logic:
+			- save comment is in an array of user, same as posts
+			- same logic
+
+	sort comments in a way that replies appear directly under parents
+		only render root parents
+			sort childs by karma
+			then run this function for each childs:
+			function { for each child: 
+				render it
+				sort childs by karma
+				run this function for each childs
+			}
+			:
+
+				comment method directly in model, returns array
+				[
+					{
+						comment 1: [
+							child comment,
+							child comment
+						]
+					},
+					{
+						comment 2: [
+							child comment,
+							child comment,
+							child comment
+						]
+					}
+				]
+
+	schema virtual on Comment called for a comment, sort its child comments by likes
+
+					//- if sortedParentComments.length > 0
+				//- 	each parent in sortedParentComments
+				//- 		.comments
+				//- 			+comment(parent)
+
+				if reply.parent.toString() == parent._id.toString() 

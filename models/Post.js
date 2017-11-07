@@ -38,25 +38,26 @@ const postSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  datesOfLikes: [{
-    author: String,
-    date: {
-      type: Date,
-      default: Date.now,
-      timestamps: true
-    }
-  }],
+  // datesOfLikes: [{
+  //   author: String,
+  //   date: {
+  //     type: Date,
+  //     default: Date.now,
+  //     timestamps: true
+  //   }
+  // }],
 }, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
 });
 
 // find comments where the post field's id is same as the post id
+/*
 postSchema.virtual('comments', {
   ref: 'Comment',
   localField: '_id',
   foreignField: 'post'
-});
+});*/
 
 // Define our indexes
 postSchema.index({
@@ -86,16 +87,14 @@ postSchema.statics.getPosts = function(sort, time) {
   const sortOrder = sort == 'timeSincePosted' ? 1 : -1;
   return this.aggregate([
     // Lookup posts and populate their comments
-    { $lookup: { from: 'comments', localField: '_id', foreignField: 'post', as: 'comments' } },
+    // { $lookup: { from: 'comments', localField: '_id', foreignField: 'post', as: 'comments' } },
     // Add a time from now field in hours
     { $addFields: { 
         timeSincePosted: {
-          $floor: {
-            $divide: [
-              { $subtract: [new Date(), "$created"] },
-              60 * 60 * 1000
-            ]
-          }
+          $divide: [
+            { $subtract: [new Date(), "$created"] },
+            60 * 60 * 1000
+          ]
         }
       } 
     },
@@ -105,9 +104,9 @@ postSchema.statics.getPosts = function(sort, time) {
     { $addFields: 
       { trendingScore: 
         { $cond: [ 
-            { $or: [ { $gt: [ "$likesCount", 0 ] }, { $gt: [ "$comments", 0 ] } ] }, 
+            { $or: [ { $gt: [ "$likesCount", 0 ] }, { $gt: [ "$commentsCount", 0 ] } ] }, 
             { $divide: [
-                { $add: [ { $multiply: [ "$likesCount", 2 ] }, { $size: "$comments" } ] },
+                { $add: [ { $multiply: [ "$likesCount", 2 ] }, "$commentsCount" ] },
                 "$timeSincePosted"
               ]
             },

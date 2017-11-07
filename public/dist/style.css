@@ -513,14 +513,6 @@ pre.error {
     .post {
       width: 100%; } }
 
-.post__action {
-  font-size: 8px; }
-  .post__action svg {
-    width: 18px;
-    height: 18px; }
-  .post__action--edit a {
-    border-bottom: 0; }
-
 .single {
   border: 1px solid black;
   margin: 20px 5px 0 5px; }
@@ -532,5 +524,34 @@ pre.error {
   width: 720px;
   height: 405px;
   margin: 10px auto; }
+
+.comments__child--indent-1 {
+  margin-left: 40px; }
+
+.comments__child--indent-2 {
+  margin-left: 80px; }
+
+.comments__child--indent-3 {
+  margin-left: 120px; }
+
+.comments__child--indent-4 {
+  margin-left: 160px; }
+
+.like {
+  font-size: 8px; }
+  .like svg {
+    width: 18px;
+    height: 18px; }
+  .like--edit a {
+    border-bottom: 0; }
+
+.like__button--liked {
+  border: 2px solid green; }
+  .like__button--liked svg {
+    fill: green; }
+
+.comment.like svg {
+  width: 25px;
+  fill: white; }
 
 /*# sourceMappingURL=style.css.map*/

@@ -21,6 +21,10 @@ block content
 						- const likeClass = likeStrings.includes(post._id.toString()) ? 'button__like--liked' : ''
 						button(type="submit" name="like" class=likeClass)
 							!=h.icon('point-up')
+			if user && post.author.equals(user._id)
+				.single__header.single__header--edit
+					a(href=`/p/${post._id}/edit`)
+						!= h.icon('pencil')
 		.single__body
 			.single__body--text
 				p #{post.text}
@@ -29,9 +33,15 @@ block content
 			.single__body--comments
 				if user
 					+commentForm(null, post._id)
-				if post.comments
-					each comment in post.comments
-						.comments
-							+comment(comment)
+				each parent, index in sortedParentComments
+					.comments
+						+comment(parent)
+						.replies
+							- console.log(sortedChildComments[index])
+							//- each childComments in sortedChildComments[index]
+							//- 	if childComments.length
+							//- 		each reply in childComments
+							//- 			+comment(reply)
+
 				
 		

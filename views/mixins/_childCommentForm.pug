@@ -1,6 +1,6 @@
 mixin childCommentForm(comment = {}, postId, commentId)
 	form.comment(action=`/p/${postId}/comments/${commentId}` method="POST" name="comment")
-		h2 New Comment
+		h3 Add Comment
 		textarea(name="text")
 			if comment
 				p= comment.text

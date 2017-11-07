@@ -9,7 +9,6 @@ mixin postCard(post = {})
 						form.like(method="POST" action=`/api/p/${post._id}/like`)
 							- const likeStrings = user.likes.map(obj => obj.toString())
 							- const likeClass = likeStrings.includes(post._id.toString()) ? 'like__button--liked' : ''
-							//pre= h.dump(likeStrings)
 							button(type="submit" name="like" class=likeClass)
 								!= h.icon('point-up')
 				if user && post.author.equals(user._id)
@@ -18,8 +17,6 @@ mixin postCard(post = {})
 							!= h.icon('pencil')
 			h2.title
 				a(href=`/p/${post._id}`) #{post.title}	
-			//.likes__count
-			//	span #{}
 			.post__author
 				a(href=`/profile/${post.author.username}`) #{post.author.username}
 				.post__date

@@ -66,5 +66,6 @@ router.get('/profile/:user', catchErrors(appController.getProfilePage));
 
 router.get('/api/search', catchErrors(appController.searchPosts));
 router.post('/api/p/:id/like', catchErrors(appController.likePost));
+router.post('/api/comment/:id/likeComment', catchErrors(commentController.likeComment));
 
 module.exports = router;

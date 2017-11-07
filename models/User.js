@@ -29,8 +29,15 @@ const userSchema = new Schema({
     type: Number,
     default: 0
   },
+  commentKarma: {
+    type: Number,
+    default: 0
+  },
   likes: [
     { type: mongoose.Schema.ObjectId, ref: 'Post' }
+  ],
+  likedComments: [
+    { type: mongoose.Schema.ObjectId, ref: 'Comment' }
   ],
   posts: [
     { type: mongoose.Schema.ObjectId, ref: 'Post' }
@@ -42,13 +49,6 @@ userSchema.virtual('gravatar').get(function() {
   return `https://www.gravatar.com/avatar/${hash}?s=40&d=identicon&r=PG`;
 });
 
-// userSchema.statics.getLikesCount = function() {
-//   return this.aggregate([
-
-//   ]);
-// };
-
-// Exposes the register method
 userSchema.plugin(passportLocalMongoose, { usernameField: 'username' });
 
 userSchema.plugin(mongodbErrorHandler);

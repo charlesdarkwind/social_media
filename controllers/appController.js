@@ -81,7 +81,26 @@ exports.getPostById = async (req, res, next) => {
   // Call populate at the end to populate the data from the related field 'author'
   const post = await Post.findOne({ _id: req.params.id }).populate('author comments');
   if (!post) return next();
-  res.render('postPage', { title: 'Post', post });
+// _______________________________________________________________________________________________________________________
+
+
+  // ************************************************************************************************
+  // Currently, the logic of sorting comments is done in here because my guess is that it would be faster
+  // than doing it in the DB but having to check each and every comment in aggregate.
+  // This implementation is likely pretty "bad".
+  // No indexes are even made so far.
+  // ************************************************************************************************ =>
+
+  // Sort post's comments by Karma
+  const sortedParentComments = await Comment.getSortedParentComments(post._id);
+  const sortedChildComments = await Promise.all(sortedParentComments.map(async (parentComment) => {
+    return await Comment.getSortedChildComments(parentComment);
+  }));
+
+// _______________________________________________________________________________________________________________________
+
+  res.render('postPage', { title: 'Post', post, sortedParentComments, sortedChildComments });
+  // res.json(sortedParentComments, sortedChildComments);
 };
 
 exports.searchPosts = async (req, res) => {
@@ -118,28 +137,21 @@ exports.likePost = async (req, res) => {
 
   const val = likes.includes(req.params.id) ? -1 : 1;
 
-  // For trending, (== to scrap ==)
-  // Update post's total likesCount & datesOfLikes array (schema adds date.now)
+  // Update post's total likesCount
   const post = await Post
-    .findByIdAndUpdate(req.params.id, 
-      { 
-        $inc: { likesCount: val }, 
-        [operator]: { 
-          datesOfLikes: {
-            author: req.user._id
-          }  
-        }
-      },
-      { new: true }
-    );
+  .findByIdAndUpdate(req.params.id, 
+    { 
+      $inc: { likesCount: val }, 
+    },
+    { new: true }
+  );
 
-  // Karma
+  // Update user's Karma, current user can't vote his own posts
   const postAuthor = await User.findOneAndUpdate(
     { _id: post.author, _id: { $ne: user.id } }, 
-    { $inc: { karma: val } 
-  });
-
-    res.json({user, post});
+    { $inc: { karma: val } }
+  );
+  res.json({user, post});
 };
 
 exports.getLikes = async (req, res) => {
@@ -169,23 +181,6 @@ exports.getTopPosts = async (req, res) => {
 
 exports.getNewPosts = async (req, res) => {
   checkQuery(req.query, res, 'timeSincePosted', 'New');
-};
-
-exports.getPosts = async (req, res) => {
-
-  let sort;
-  if (req.query.length) {
-    sort = req.query.sort;
-  } else {
-    sort = 'trending';
-  }
-  // const sort = req.query.length ? req.query.sort : 'trending';
-  const time = req.query.time || 168;
-
-  const posts = await Post.getPosts(sort, time);
-  res.json(posts);
-  // title = query.sort
-  // res.render('all', { posts, title: 'New Posts' });
 };
 
 exports.getProfilePage = async (req, res) => {

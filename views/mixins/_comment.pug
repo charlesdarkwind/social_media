@@ -1,17 +1,27 @@
 include _childCommentForm
 
 mixin comment(comment = {})
-	.comment__header
-		.comment__author
-			img.avatar(src=comment.author.gravatar)
-			a(href=`/profile/${comment.author.username}`) #{comment.author.username}
-			time.comments__time(datetime=comment.created)= h.moment(comment.created).fromNow()
-	.comment__text
-		p= comment.text
-	.comments__childs
-		+childCommentForm(null, post._id, comment._id)
-		//if comment.childComments.length > 0
-			each childComment in childComments
-				//- - console.log(post._id)
+	.comment
+		.comment__header
+			.comment__header.comment__author--avatar
+				img.avatar(src=comment.author.gravatar)
+			.comment__header.comment__author--username
+				a(href=`/profile/${comment.author.username}`) #{comment.author.username}
+			.comment__header.comment__author--date
+				time.comments__time(datetime=comment.created)= h.moment(comment.created).fromNow()
+			if user
+				.comment__header.comment__header--like
+						form.like(method="POST" action=`/api/comments/${comment._id}/likeComment`)
+							- const likeStrings = user.likedComments.map(obj => obj.toString())
+							- const likeClass = likeStrings.includes(comment._id.toString()) ? 'button__like--liked' : ''
+							button(type="submit" name="like" class=likeClass)
+								!=h.icon('point-up')
+		.comment__text
+			p= comment.text
+		if user
+			.comments__childs(class=`comments__child--indent-${comment.parentsCount}`)
 				+childCommentForm(null, post._id, comment._id)
+
+			
+
 	
