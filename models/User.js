@@ -19,6 +19,10 @@ const userSchema = new Schema({
     required: 'Please supply a username',
     trim: true
   },
+  about: {
+    type: String,
+    trim: true
+  },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   created: {

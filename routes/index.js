@@ -30,8 +30,8 @@ router.post('/add/:id',
 router.get('/p/:id', catchErrors(appController.getPostById));
 router.get('/p/:id/edit', catchErrors(appController.editPost))
 
-router.post('/p/:id/comment', catchErrors(commentController.addComment));
-router.post('/p/:postId/comments/:parentCommentId', catchErrors(commentController.addChildComment));
+// router.post('/p/:id/comment', catchErrors(commentController.addComment));
+router.post('/addComment/:postId/:parentId', catchErrors(commentController.addComment));
 
 router.get('/login', userController.loginForm);
 router.post('/login', authController.login);
@@ -66,6 +66,6 @@ router.get('/profile/:user', catchErrors(appController.getProfilePage));
 
 router.get('/api/search', catchErrors(appController.searchPosts));
 router.post('/api/p/:id/like', catchErrors(appController.likePost));
-router.post('/api/comment/:id/likeComment', catchErrors(commentController.likeComment));
+router.post('/api/likeComment/:id', catchErrors(commentController.likeComment));
 
 module.exports = router;

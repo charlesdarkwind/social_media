@@ -79,28 +79,54 @@ exports.updatePost = async (req, res) => {
 
 exports.getPostById = async (req, res, next) => {
   // Call populate at the end to populate the data from the related field 'author'
-  const post = await Post.findOne({ _id: req.params.id }).populate('author comments');
+  const post = await Post.findOne({ _id: req.params.id }).populate('author');
   if (!post) return next();
-// _______________________________________________________________________________________________________________________
 
+  // Query all post's comments and apply initial sorting
+  const comments = await Comment
+  .find({ post: req.params.id })
+  .sort({ 'parentsCount': 1, 'likesCount': -1, 'fullSlug': 1  });
+  // .skip(pageNum * pageSize)
+  // .limit(pageSize);
 
-  // ************************************************************************************************
-  // Currently, the logic of sorting comments is done in here because my guess is that it would be faster
-  // than doing it in the DB but having to check each and every comment in aggregate.
-  // This implementation is likely pretty "bad".
-  // No indexes are even made so far.
-  // ************************************************************************************************ =>
+  // Sort comments in their final hierarchical order, like reddit.
+  const maxParentsCount = comments[comments.length - 1].parentsCount;
+  let count = 0;
+  let finalTree;
+  
+  buildTree(comments);
 
-  // Sort post's comments by Karma
-  const sortedParentComments = await Comment.getSortedParentComments(post._id);
-  const sortedChildComments = await Promise.all(sortedParentComments.map(async (parentComment) => {
-    return await Comment.getSortedChildComments(parentComment);
-  }));
+  // Check comments in order of their parentsCount (0 means is root, not a child) 
+  // and return all of its childs and put them directly after it.
+  function buildTree(array) {
+    const currentArray = []; 
 
-// _______________________________________________________________________________________________________________________
+    array.forEach(item => {
+      if (item.parentsCount == count) { 
+        // push item into currentArray
+        currentArray.push(item);
+        // find all of its childs 
+        const re = new RegExp(`^${item.fullSlug}/`);
+        const childs = comments.filter(comment => comment.parentsCount == count + 1 && re.test(comment.fullSlug));
+        // push the childs
+        currentArray.push(...childs);
+      } else if (item.parentsCount < count) { // comment has already been checked for childs
+        // push item into currentArray
+        currentArray.push(item);
+      }
+    });
+  
+    // Check previous result array recursively 
+    if (count < maxParentsCount) {
+      count++;
+      buildTree(currentArray);
+    } else {
+      finalTree = currentArray;
+    }
+  }
 
-  res.render('postPage', { title: 'Post', post, sortedParentComments, sortedChildComments });
-  // res.json(sortedParentComments, sortedChildComments);
+  res.render('postPage', { title: 'Post', post, comments: finalTree });
+  // res.json(comments);
 };
 
 exports.searchPosts = async (req, res) => {
@@ -120,24 +146,21 @@ exports.searchPosts = async (req, res) => {
 };
 
 exports.likePost = async (req, res) => {
-
-  // Voting user's likes
+  // Current user's likes
   const likes = req.user.likes.map(obj => obj.toString());
 
-  // Pull it if already liked, addtoset allow to not add it again
+  // Update user's likes 
   const operator = likes.includes(req.params.id) ? '$pull' : '$addToSet';
-
   const user = await User
-    .findByIdAndUpdate(req.user._id,
-      { 
-        [operator]: { likes: req.params.id } 
-      },
-      { new: true }
-    );
+  .findByIdAndUpdate(req.user._id,
+    { 
+      [operator]: { likes: req.params.id } 
+    },
+    { new: true }
+  );
 
+  // Update post's likesCount
   const val = likes.includes(req.params.id) ? -1 : 1;
-
-  // Update post's total likesCount
   const post = await Post
   .findByIdAndUpdate(req.params.id, 
     { 

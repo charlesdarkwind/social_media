@@ -1,12 +1,13 @@
 extends layout
 
 block content
-	.inner
+	.inner__edit
 		h2 Edit Your Account
 		form(action="/account" method="POST")
 			label(for="username") Username
 			input(type="text" name="username" value=user.username)
 			label(for="email") Email Address
 			input(type="email" name="email" value=user.email)
+			label(for="about") About Me
+			textarea(name="about" rows="4" cols="50" placeholder=user.about)
 			input.button(type="submit" value="Update My Account")
-			

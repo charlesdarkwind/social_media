@@ -1,5 +1,5 @@
-mixin childCommentForm(comment = {}, postId, commentId)
-	form.comment(action=`/p/${postId}/comments/${commentId}` method="POST" name="comment")
+mixin childCommentForm(comment = {}, postId, parentId)
+	form.comment(action=`/addComment/${postId}/${parentId}` method="POST" name="comment")
 		h3 Add Comment
 		textarea(name="text")
 			if comment

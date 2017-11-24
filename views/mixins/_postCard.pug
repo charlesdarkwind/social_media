@@ -3,15 +3,15 @@ mixin postCard(post = {})
 		.post__hero
 			.post__actions
 				.post__likesCount
-					span= post.likesCount
+					span #{post.likesCount} points
 				if user
 					.post__action.post__action--like
-						form.like(method="POST" action=`/api/p/${post._id}/like`)
+						form.likePost(method="POST" action=`/api/p/${post._id}/like`)
 							- const likeStrings = user.likes.map(obj => obj.toString())
 							- const likeClass = likeStrings.includes(post._id.toString()) ? 'like__button--liked' : ''
-							button(type="submit" name="like" class=likeClass)
+							button(type="submit" name="likePost" class=likeClass)
 								!= h.icon('point-up')
-				if user && post.author.equals(user._id)
+				if user && post.author._id.equals(user._id)
 					.post__action.post__action--edit
 						a(href=`/p/${post._id}/edit`)
 							!= h.icon('pencil')

@@ -1,64 +1,65 @@
 const mongoose = require('mongoose');
 const Comment = mongoose.model('Comment');
 const Post = mongoose.model('Post');
+const User = mongoose.model('User');
+const crypto = require('crypto');
 
 exports.addComment = async (req, res) => {
   req.body.author = req.user._id;
-  req.body.post = req.params.id;
-  req.body.isPostComment = true;
+  req.body.post = req.params.postId;
+  const created = Date.now();
+  req.body.created = created;
+
+  // If it has a parent or not
+  let parent;
+  if (req.params.parentId == 'rootComment') { 
+    req.body.parent = null;
+    parent = null;
+  } else { 
+    req.body.parent = req.params.parentId;
+    parent = await Comment.findById(req.params.parentId);
+    req.body.parentsCount = parent.parentsCount + 1;
+  }
+
+  // Generate the unique portions of the slug and fullSlug
+  const slugPart = crypto.randomBytes(2).toString('hex');
+  const fullSlugPart = `${created}:${slugPart}`;
+
+  if (parent) {
+    req.body.slug = `${parent.slug}/${slugPart}`;
+    req.body.fullSlug = `${parent.fullSlug}/${fullSlugPart}`
+  } else {
+    req.body.slug = slugPart;
+    req.body.fullSlug = fullSlugPart;
+  }
 
   const comment = await (new Comment(req.body)).save();
-  const post = await Post.findByIdAndUpdate(
+  
+  res.redirect('back');
+
+  // Update post's commentCount
+  await Post.findByIdAndUpdate(
     req.params.id,
     { $inc: { 'commentsCount': 1 } }
   );
-  res.redirect('back');
-};
-
-exports.addChildComment = async (req, res) => {
-  req.body.author = req.user._id;
-  req.body.post = req.params.postId;
-  req.body.parent = req.params.parentCommentId;
-
-  // 1. find parent and its parentCount
-  const parent = await Comment.findById(req.params.parentCommentId);
-  // 2. Save new Comment with the new parentCount
-  req.body.parentsCount = parent.parentsCount + 1;
-  const comment = await (new Comment(req.body)).save();
-  // 3. Update parent replies, push the new comment
-  await Comment.findByIdAndUpdate(
-    req.params.parentCommentId, 
-    { '$push': { 'replies': comment } },
-    { new: true }
-  );
-
-  // Update the Post's Comment Count
-  const post = await Post.findByIdAndUpdate(
-    req.params.postId,
-    { $inc: { 'commentsCount': 1 } }
-  );
-
-  res.redirect('back');
 };
 
 exports.likeComment = async (req, res) => {
-  // User's liked comments
-  const likes = req.user.likedComments.map(obj => obj.toString());
+  // Current user's liked comments
+  const likedComments = req.user.likedComments.map(obj => obj.toString());
 
-  // Pull it if already liked, addToSet allow to not add it again
-  const operator = likes.includes(req.params.id) ? '$pull' : 'addToSet';
-
+  // Update user's likedComments
+  const operator = likedComments.includes(req.params.id) ? '$pull' : '$addToSet';
   const user = await User
   .findByIdAndUpdate(req.user.id,
-  {
-    [operator]: { likedComments: req.params.id }
-  },
-  { new: true }
-  );
+    {
+      [operator]: { likedComments: req.params.id }
+    },
+    { new: true }
+  );  
 
+  // Update comment's likeCount
   const val = likedComments.includes(req.params.id) ? -1 : 1;
-
-  // Update comment's total like count
   const comment = await Comment
   .findByIdAndUpdate(req.params.id, 
     { 
@@ -67,10 +68,11 @@ exports.likeComment = async (req, res) => {
     { new: true }
   );
 
-  // Update user's Karma, current user can't vote his own comments
-  const commentAuthor = await User.findByIdAndUpdate(
+  res.json({ comment });
+
+  // Update author's Karma
+  const author = await User.findOneAndUpdate(
     { _id: comment.author, _id: { $ne: user.id } },
     { $inc: { karma: val } }
   );
-  res.json({user, comment});
 };

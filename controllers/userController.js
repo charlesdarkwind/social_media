@@ -46,10 +46,11 @@ exports.account = (req, res) => {
 exports.updateAccount = async (req, res) => {
   const updates = {
     username: req.body.username,
-    email: req.body.email
+    email: req.body.email,
+    about: req.body.about
   };
 
-  // Takes 3 thing: query, updates, options.
+  // Takes 3 things: query, updates, options.
   const user = await User.findOneAndUpdate(
     { _id: req.user._id },
     { $set: updates },

@@ -537,12 +537,12 @@ pre.error {
 .comments__child--indent-4 {
   margin-left: 160px; }
 
-.like {
+.likePost, .likeComment {
   font-size: 8px; }
-  .like svg {
+  .likePost svg, .likeComment svg {
     width: 18px;
     height: 18px; }
-  .like--edit a {
+  .likePost--edit a, .likeComment--edit a {
     border-bottom: 0; }
 
 .like__button--liked {

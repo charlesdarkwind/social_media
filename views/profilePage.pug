@@ -8,6 +8,9 @@ block content
 	.profile__header
 		.profile__header.profile__header--username
 			h1= userProfile.username
+		if user && user.id == userProfile.id
+			.profile__header.profile__header--editInfos
+				a.accountLink(href="/account") My Infos
 		.profile__header.profile__header--date
 			span Joined 
 				time= h.moment(userProfile.created).fromNow()
@@ -18,6 +21,11 @@ block content
 			span Likes given: #{userProfile.likes.length}
 		.profile__body.profile__body--karma
 			span Karma: #{userProfile.karma}
+		.profile__body.profile__body--about
+			span= user.about
 		.profile__body.profile__body--posts
 			each post in userPosts
 				+postCard(post)
+
+		
+

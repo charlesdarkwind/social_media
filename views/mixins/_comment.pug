@@ -1,4 +1,4 @@
-include _childCommentForm
+include _commentForm
 
 mixin comment(comment = {})
 	.comment
@@ -9,18 +9,24 @@ mixin comment(comment = {})
 				a(href=`/profile/${comment.author.username}`) #{comment.author.username}
 			.comment__header.comment__author--date
 				time.comments__time(datetime=comment.created)= h.moment(comment.created).fromNow()
+			.comment__header.comment__header--likesCount
+				if comment.likesCount != 0
+					span #{comment.likesCount} points
+				else 
+					span No points
 			if user
 				.comment__header.comment__header--like
-						form.like(method="POST" action=`/api/comments/${comment._id}/likeComment`)
+					if user && user.id != comment.author.id
+						form.likeComment(method="POST" action=`/api/likeComment/${comment._id}`)
 							- const likeStrings = user.likedComments.map(obj => obj.toString())
-							- const likeClass = likeStrings.includes(comment._id.toString()) ? 'button__like--liked' : ''
-							button(type="submit" name="like" class=likeClass)
+							- const likeClass = likeStrings.includes(comment._id.toString()) ? 'like_button--liked' : ''
+							button(type="submit" name="likeComment" class=likeClass)
 								!=h.icon('point-up')
 		.comment__text
 			p= comment.text
 		if user
 			.comments__childs(class=`comments__child--indent-${comment.parentsCount}`)
-				+childCommentForm(null, post._id, comment._id)
+				+commentForm(null, post._id, comment._id)
 
 			
 

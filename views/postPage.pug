@@ -13,13 +13,13 @@ block content
 				.single__header.single__header--date
 					time.post__time(datetime=post.created)= h.moment(post.created).fromNow()
 			.single__header.single__header--likesCount
-				span= post.likesCount
+				span #{post.likesCount} points
 			if user
 				.single__header.single__header--like
-					form.like(method="POST" action=`/api/p/${post._id}/like`)
+					form.likePost(method="POST" action=`/api/p/${post._id}/like`)
 						- const likeStrings = user.likes.map(obj => obj.toString())
-						- const likeClass = likeStrings.includes(post._id.toString()) ? 'button__like--liked' : ''
-						button(type="submit" name="like" class=likeClass)
+						- const likeClass = likeStrings.includes(post._id.toString()) ? 'like__button--liked' : ''
+						button(type="submit" name="likePost" class=likeClass)
 							!=h.icon('point-up')
 			if user && post.author.equals(user._id)
 				.single__header.single__header--edit
@@ -32,16 +32,11 @@ block content
 				iframe(id="ytplayer" type="text/html" width="720" height="405" src=(`https://www.youtube.com/embed/${post.urlId}`) frameborder="0" allowfullscreen)
 			.single__body--comments
 				if user
-					+commentForm(null, post._id)
-				each parent, index in sortedParentComments
+					+commentForm(null, post._id, 'rootComment')
+				each comment in comments
 					.comments
-						+comment(parent)
-						.replies
-							- console.log(sortedChildComments[index])
-							//- each childComments in sortedChildComments[index]
-							//- 	if childComments.length
-							//- 		each reply in childComments
-							//- 			+comment(reply)
+						+comment(comment)
+
 
 				
 		
