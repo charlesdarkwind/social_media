@@ -1,3 +1,14 @@
+
+multiple communities
+		
+
+	community {
+		upload image system
+
+		implement: chat / rooms / subscription
+		type of post: reddit / youtube / patreon / twitter / text / image / vimeo
+	}
+
 Menu tabs (pages): 
 	
 	Logo/title: redirects to All/Main page	
